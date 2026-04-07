@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الموظف - بريد قطينة</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #2c3e50; color: white; text-align: center; margin: 0; padding: 20px; }
+        .admin-box { background: white; color: #333; max-width: 950px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .login-section { margin-bottom: 20px; }
+        input[type="password"] { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; text-align: center; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; margin: 5px; }
+        .btn-green { background-color: #27ae60; }
+        .btn-red { background-color: #e74c3c; }
+        .btn-blue { background-color: #2980b9; }
+        .btn-orange { background-color: #d35400; }
+        .btn-purple { background-color: #8e44ad; width: 100%; margin-top: 15px; font-size: 16px;}
+        .btn-brown { background-color: #795548; margin-top: 5px; }
+        .btn-brown:hover { background-color: #5d4037; }
+        
+        .filter-group { background: #fdfefe; border: 1px solid #bdc3c7; padding: 10px; border-radius: 5px; margin-top: 20px;}
+        .filter-btn { padding: 8px 15px; border: 1px solid #ccc; background: #eee; cursor: pointer; border-radius: 5px; margin: 0 5px;}
+        .filter-btn.active { background: #34495e; color: white; border-color: #34495e;}
+
+        /* تنسيقات أزرار النسخ الجديدة */
+        .info-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; }
+        .copy-btn { background: #ecf0f1; border: 1px solid #bdc3c7; border-radius: 4px; cursor: pointer; padding: 3px 8px; font-size: 11px; color: #2c3e50; font-weight: bold;}
+        .copy-btn:hover { background: #bdc3c7; }
+
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 8px; }
+        .control-group { border: 1px solid #bdc3c7; padding: 10px; border-radius: 5px; background: white;}
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;}
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #34495e; color: white; }
+        .row-suspended { background-color: #fdf2e9; color: #d35400; }
+        .row-absent { background-color: #f6eee3; }
+        #dashboard { display: none; } 
+        #adminMessage { margin-top: 10px; font-weight: bold; }
+        .info-small { font-size: 13px; color: #34495e; display: block; font-weight: bold;}
+    </style>
+</head>
+<body>
+
+    <div class="admin-box">
+        <h2>لوحة عمليات الموظف</h2>
+        
+        <div class="login-section" id="loginSection">
+            <p>أدخل كلمة مرور الموظف لفتح اللوحة:</p>
+            <input type="password" id="adminPass" placeholder="كلمة المرور">
+            <br>
+            <button class="btn btn-blue" onclick="loadDashboard()">دخول 🔓</button>
+            <div id="adminMessage"></div>
+        </div>
+
+        <div id="dashboard">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <h3>حالة الموقع العامة</h3>
+                    <button class="btn btn-green" onclick="changeSetting('siteStatus', 'مفتوح')">فتح التسجيل</button>
+                    <button class="btn btn-red" onclick="changeSetting('siteStatus', 'مغلق')">إغلاق التسجيل</button>
+                    <hr style="border:0; border-top:1px solid #ddd; margin: 15px 0;">
+                    <button class="btn btn-purple" onclick="resetQueue()">🔄 تصفير العداد لليوم الجديد</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>توفر الرواتب (تعليق/تفعيل)</h3>
+                    <button class="btn btn-green" onclick="changeSetting('socStatus', 'active')">تفعيل الاجتماعية</button>
+                    <button class="btn btn-orange" onclick="changeSetting('socStatus', 'suspended')">تعليق الاجتماعية</button>
+                    <br>
+                    <button class="btn btn-green" onclick="changeSetting('penStatus', 'active')">تفعيل المعاشات</button>
+                    <button class="btn btn-orange" onclick="changeSetting('penStatus', 'suspended')">تعليق المعاشات</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h3>شاشة المناداة والتحقق</h3>
+                
+                <div style="margin-bottom: 15px; background: #fdf2e9; padding: 10px; border-radius: 5px; display: inline-block;">
+                    <strong>إعدادات النسخ:</strong> 
+                    <button id="numFormatBtn" class="filter-btn active" onclick="toggleNumberFormat()" style="background: #e67e22; color: white;">أرقام الهوية بالعربي (١٢٣)</button>
+                </div>
+                <br>
+
+                <button class="btn btn-blue" onclick="loadDashboard()">تحديث القائمة 🔄</button>
+                <br><br>
+                <span>طريقة المناداة: </span>
+                <button class="filter-btn active" onclick="filterAdminTable('all', this)">الكل (حسب الدور)</button>
+                <button class="filter-btn" onclick="filterAdminTable('ذكر', this)">ذكور فقط</button>
+                <button class="filter-btn" onclick="filterAdminTable('أنثى', this)">إناث فقط</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>الرقم</th>
+                        <th>الاسم والتسجيل</th>
+                        <th>التحقق (هوية/تأمين/هاتف)</th>
+                        <th>النوع</th>
+                        <th>إجراء الموظف</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw_CbEKjpBTfvNpZn5VhWSimqlo9t3vA7eJQiogppUMHYKrgaQrA80edBeY4zQIYcqihA/exec';
+        let currentPassword = '';
+        let currentAdminData = [];
+        let isArabicNumbers = true; // النظام يبدأ والأرقام بالعربية (١٢٣)
+
+        function loadDashboard() {
+            const passInput = document.getElementById('adminPass').value;
+            const msgBox = document.getElementById('adminMessage');
+            if(!passInput) { msgBox.innerText = "أدخل كلمة المرور!"; msgBox.style.color = "red"; return; }
+            
+            msgBox.innerText = "جاري جلب البيانات...";
+            msgBox.style.color = "blue";
+
+            let formData = new FormData();
+            formData.append('action', 'getAdminData');
+            formData.append('password', passInput);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "error") {
+                    msgBox.innerText = "كلمة المرور خاطئة!";
+                    msgBox.style.color = "red";
+                } else {
+                    currentPassword = passInput;
+                    currentAdminData = data.activeQueue;
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.filter-btn')[1].classList.add('active');
+                    renderEmployeeTable(currentAdminData);
+                }
+            })
+            .catch(err => { msgBox.innerText = "خطأ في الاتصال!"; msgBox.style.color = "red"; });
+        }
+
+        // --- الدالة المسؤولة عن تبديل شكل الأرقام --- //
+        function toggleNumberFormat() {
+            isArabicNumbers = !isArabicNumbers;
+            const btn = document.getElementById('numFormatBtn');
+            if(isArabicNumbers) {
+                btn.innerText = "أرقام الهوية بالعربي (١٢٣)";
+                btn.style.background = "#e67e22"; btn.style.color = "white";
+            } else {
+                btn.innerText = "أرقام الهوية بالانجليزي (123)";
+                btn.style.background = "#95a5a6"; btn.style.color = "white";
+            }
+            renderEmployeeTable(currentAdminData); 
+        }
+
+        function convertNumbers(numStr) {
+            if (!numStr) return '';
+            if (!isArabicNumbers) return numStr; 
+            
+            const arabicNums = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return String(numStr).replace(/[0-9]/g, function(w) {
+                return arabicNums[w];
+            });
+        }
+
+        // --- الدالة المسؤولة عن نسخ النص بضغطة زر --- //
+        function copyText(textToCopy, btnElement) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                btnElement.innerText = "✅ تم";
+                btnElement.style.background = "#27ae60";
+                btnElement.style.color = "white";
+                setTimeout(() => { 
+                    btnElement.innerText = "📋 نسخ"; 
+                    btnElement.style.background = "#ecf0f1";
+                    btnElement.style.color = "#2c3e50";
+                }, 1500);
+            });
+        }
+
+        function filterAdminTable(gender, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            if (gender === 'all') {
+                renderEmployeeTable(currentAdminData);
+            } else {
+                let filtered = currentAdminData.filter(row => row.gender === gender);
+                renderEmployeeTable(filtered);
+            }
+        }
+
+        function renderEmployeeTable(queue) {
+            const tbody = document.getElementById('employeeTableBody');
+            tbody.innerHTML = '';
+            if(queue.length === 0) { tbody.innerHTML = '<tr><td colspan="5">لا يوجد مراجعين في هذه القائمة</td></tr>'; return; }
+            
+            queue.forEach(row => {
+                const tr = document.createElement('tr');
+                if(row.status === 'suspended') tr.className = 'row-suspended';
+                if(row.status === 'absent') tr.className = 'row-absent';
+                
+                let actionButton = '';
+                if(row.status === 'suspended') {
+                    actionButton = '<span>الراتب غير متوفر</span>';
+                } else {
+                    let absentBtnText = row.status === 'absent' ? 'مؤجل حالياً' : 'غائب (تأجيل)';
+                    actionButton = `
+                        <button class="btn btn-green" onclick="markAsPaid(${row.rowIndex})">استلم</button>
+                        <button class="btn btn-brown" onclick="markAsAbsent(${row.rowIndex})">${absentBtnText}</button>
+                    `;
+                }
+
+                // هنا يتم تحويل الأرقام وتجهيز زر النسخ بجانبها
+                let displayNatId = convertNumbers(row.nationalId);
+                let displayInsId = convertNumbers(row.insuranceId);
+                
+                let natIdHtml = displayNatId ? 
+                    `<div class="info-row"><span class="info-small">هوية: <span dir="ltr">${displayNatId}</span></span> <button class="copy-btn" onclick="copyText('${displayNatId}', this)">📋 نسخ</button></div>` : '<div class="info-row">هوية: غير متوفر</div>';
+                
+                let insIdHtml = displayInsId ? 
+                    `<div class="info-row"><span class="info-small">تأمين: <span dir="ltr">${displayInsId}</span></span> <button class="copy-btn" onclick="copyText('${displayInsId}', this)">📋 نسخ</button></div>` : '<div class="info-row">تأمين: غير متوفر</div>';
+
+                tr.innerHTML = `
+                    <td><h2>${row.id}</h2></td>
+                    <td>
+                        <strong>${row.name}</strong><br>
+                        <span style="font-size: 11px; color: #7f8c8d;" dir="ltr">${row.time}</span>
+                    </td>
+                    <td>
+                        ${natIdHtml}
+                        ${insIdHtml}
+                        <div class="info-row" style="margin-top:8px;"><span style="font-size:12px; color:#555;">هاتف: ${row.phone || '-'}</span></div>
+                    </td>
+                    <td>${row.type}</td>
+                    <td>${actionButton}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function markAsPaid(rowIndex) {
+            if(!confirm("هل استلم المتقاعد راتبه؟ (سيختفي من الشاشة)")) return;
+            let formData = new FormData();
+            formData.append('action', 'markPaid');
+            formData.append('password', currentPassword);
+            formData.append('rowIndex', rowIndex); 
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => { if(data.status === "success") loadDashboard(); });
+        }
+
+        function markAsAbsent(rowIndex) {
+            if(!confirm("هل تريد تأجيل دور هذا الشخص لأنه غائب؟ (سيظهر لونه بني للناس)")) return;
+            let formData = new FormData();
+            formData.append('action', 'markAbsent');
+            formData.append('password', currentPassword);
+            formData.append('rowIndex', rowIndex); 
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => { if(data.status === "success") loadDashboard(); });
+        }
+
+        function changeSetting(settingName, newValue) {
+            let formData = new FormData();
+            formData.append('action', 'updateSettings');
+            formData.append('password', currentPassword);
+            formData.append('settingName', settingName);
+            formData.append('newValue', newValue);
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => { if(data.status === "success") { alert("تم التحديث!"); loadDashboard(); } });
+        }
+
+        function resetQueue() {
+            if(!confirm("⚠️ تحذير: هذا سيصفر العداد لليوم الجديد. هل أنت متأكد؟")) return;
+            let formData = new FormData();
+            formData.append('action', 'updateSettings');
+            formData.append('password', currentPassword);
+            formData.append('settingName', 'resetTime');
+            formData.append('newValue', new Date().toISOString());
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => { if(data.status === "success") { alert("تم تصفير الدور بنجاح!"); loadDashboard(); } });
+        }
+    </script>
+</body>
+</html>
