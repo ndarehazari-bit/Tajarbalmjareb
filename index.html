@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة تسجيل دور رواتب المتقاعدين - قطينة</title>
+    <title>تسجيل دور رواتب المتقاعدين - قطينة</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,8 +14,15 @@
 </div>
 
 <div class="main-container">
+    <div class="about-section">
+        <h2>عن الخدمة</h2>
+        <p>مرحباً بكم في خدمة تسجيل الدور الإلكتروني المسبق لاستلام رواتب المتقاعدين في مكتب بريد قطينة.</p>
+        <p>يرجى إدخال البيانات بدقة لضمان حصولكم على مستحقاتكم بسلاسة.</p>
+    </div>
+
     <div class="form-section">
-        <div id="closedMessage" style="display: none; text-align: center; padding: 40px 20px; background: #fff3f3; color: #c0392b; border: 2px solid #e74c3c; border-radius: 12px;">
+        
+        <div id="closedMessage" style="display: none; text-align: center; padding: 30px 20px; background: #fff3f3; color: #c0392b; border: 2px solid #e74c3c; border-radius: 12px; margin-bottom: 20px;">
             <h2 style="margin-top:0;">⚠️ تنبيه</h2>
             <p style="font-size: 18px; font-weight: bold; line-height: 1.6;">
                 نعتذر من السادة المتقاعدين، التسجيل متوقف حالياً.<br>
@@ -23,51 +30,203 @@
             </p>
         </div>
 
-        <div id="registrationForm" style="display:none;">
+        <div id="registrationFormWrapper">
             <h2>تسجيل دور جديد</h2>
             <form id="queueForm">
-                <div class="form-group"><label>الاسم الثلاثي:</label><input type="text" name="name" required></div>
-                <div class="form-group"><label>اسم الأم:</label><input type="text" name="motherName" required></div>
-                <div class="form-group"><label>الرقم الوطني:</label><input type="text" name="nationalId" required></div>
-                <div class="form-group"><label>الرقم التأميني:</label><input type="text" name="insuranceId" required></div>
-                <div class="form-group"><label>رقم الهاتف:</label><input type="text" name="phone" required></div>
+                <div class="form-group">
+                    <label>الاسم الثلاثي:</label>
+                    <input type="text" id="name" name="name" required placeholder="أدخل اسمك الثلاثي">
+                </div>
+                <div class="form-group">
+                    <label>اسم الأم:</label>
+                    <input type="text" id="motherName" name="motherName" required placeholder="أدخل اسم الأم">
+                </div>
+                <div class="form-group">
+                    <label>الرقم الوطني (رقم الهوية):</label>
+                    <input type="text" id="nationalId" name="nationalId" required placeholder="أدخل الرقم الوطني المكون من 11 خانة">
+                </div>
+                <div class="form-group">
+                    <label>الرقم التأميني:</label>
+                    <input type="text" id="insuranceId" name="insuranceId" required placeholder="أدخل الرقم التأميني الخاص بك">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف (للتواصل عند الضرورة):</label>
+                    <input type="text" id="phone" name="phone" required placeholder="أدخل رقم هاتفك">
+                </div>
+                
                 <div class="form-group radio-group">
                     <label>الجنس:</label>
-                    <input type="radio" name="gender" value="ذكر" required> ذكر
-                    <input type="radio" name="gender" value="أنثى" required> أنثى
+                    <input type="radio" id="maleRadio" name="gender" value="ذكر" required> <label for="maleRadio">ذكر</label>
+                    <input type="radio" id="femaleRadio" name="gender" value="أنثى" required> <label for="femaleRadio">أنثى</label>
                 </div>
-                <div class="form-group"><label>نوع الراتب:</label>
+                
+                <div class="form-group" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;">
+                    <label style="margin-bottom: 10px;">نوع الراتب:</label>
                     <div class="pension-type-group">
-                        <label><input type="radio" name="pensionType" value="اجتماعية" required> تأمينات اجتماعية</label>
-                        <label><input type="radio" name="pensionType" value="معاشات" required> تأمينات ومعاشات</label>
+                        <label for="socRadio">
+                            <input type="radio" id="socRadio" name="pensionType" value="اجتماعية" required> تأمينات اجتماعية
+                        </label>
+                        <label for="penRadio">
+                            <input type="radio" id="penRadio" name="pensionType" value="معاشات" required> تأمينات ومعاشات
+                        </label>
                     </div>
                 </div>
+
                 <button type="submit" class="submit-btn" id="submitBtn">تسجيل الدور</button>
             </form>
-            <div id="resultCard" class="result-card"><h3>تم بنجاح! رقمك: <span id="qNum"></span></h3></div>
+
+            <div id="resultCard" class="result-card">
+                <h3>تم تسجيل دورك بنجاح! 🎉</h3>
+                <div class="queue-number" id="mixedQueueText">رقمك في الدور: <span></span></div>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw_CbEKjpBTfvNpZn5VhWSimqlo9t3vA7eJQiogppUMHYKrgaQrA80edBeY4zQIYcqihA/exec';
+<div class="queue-section">
+    <h2 style="text-align: center; color: #2c3e50;">قوائم الدور الحالية</h2>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 ابحث عن اسمك هنا لرؤية دورك بسرعة...">
+    </div>
 
-    function fetchStatus() {
+    <div class="tabs">
+        <button class="tab-btn active" onclick="filterByTab('all', this)">الدور العام (مختلط) ⏳</button>
+        <button class="tab-btn" onclick="filterByTab('ذكر', this)">قائمة الذكور 👨</button>
+        <button class="tab-btn" onclick="filterByTab('أنثى', this)">قائمة الإناث 👩</button>
+        <button class="tab-btn" onclick="filterByTab('log', this)">السجل الشامل 📋</button>
+    </div>
+
+    <div id="loading">جاري تحديث القوائم...</div>
+
+    <div class="table-container active">
+        <table>
+            <thead>
+                <tr>
+                    <th>الرقم</th>
+                    <th>الاسم الثلاثي</th>
+                    <th>وقت التسجيل</th>
+                    <th>نوع الراتب</th>
+                    <th>حالة الدور</th>
+                </tr>
+            </thead>
+            <tbody id="mainTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw_CbEKjpBTfvNpZn5VhWSimqlo9t3vA7eJQiogppUMHYKrgaQrA80edBeY4zQIYcqihA/exec'; 
+    let allData = { activeQueue: [], fullLog: [] };
+
+    function fetchQueues() {
+        document.getElementById('loading').style.display = 'block';
         fetch(scriptURL + "?action=getPublicData")
-        .then(res => res.json())
-        .then(data => {
-            if(data.registrationStatus === "مغلق") {
-                document.getElementById('closedMessage').style.display = 'block';
-                document.getElementById('registrationForm').style.display = 'none';
-            } else {
-                document.getElementById('closedMessage').style.display = 'none';
-                document.getElementById('registrationForm').style.display = 'block';
-            }
-            // استدعاء دالة رسم الجداول (تستخدم كود النسخة السابقة نفسه)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                allData = data;
+                
+                if (data.registrationStatus === "مغلق") {
+                    document.getElementById('registrationFormWrapper').style.display = 'none';
+                    document.getElementById('closedMessage').style.display = 'block';
+                } else {
+                    document.getElementById('registrationFormWrapper').style.display = 'block';
+                    document.getElementById('closedMessage').style.display = 'none';
+                }
+                
+                renderTable(allData.activeQueue, 'all'); 
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function filterByTab(filterType, btnElement) {
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        btnElement.classList.add('active');
+        document.getElementById('searchInput').value = '';
+
+        if (filterType === 'log') {
+            renderTable(allData.fullLog, 'log');
+        } else {
+            renderTable(allData.activeQueue, filterType);
+        }
+    }
+
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str.toString().replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+    }
+
+    function renderTable(dataArray, filter) {
+        const tbody = document.getElementById('mainTableBody');
+        tbody.innerHTML = '';
+        
+        let filteredData = dataArray;
+        if (filter === 'ذكر' || filter === 'أنثى') {
+            filteredData = dataArray.filter(row => row.gender === filter);
+        }
+
+        if(!filteredData || filteredData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">لا توجد بيانات لهذه القائمة</td></tr>';
+            return;
+        }
+
+        filteredData.forEach(row => {
+            const tr = document.createElement('tr');
+            let statusClass = '', statusText = '';
+            let badgeClass = row.type === 'اجتماعية' ? 'badge-soc' : 'badge-pen';
+
+            if (row.status === 'paid') { statusClass = 'status-paid'; statusText = 'تم الدفع ✔️'; } 
+            else if (row.status === 'suspended') { statusClass = 'status-suspended'; statusText = 'مُعلّق ⏳'; } 
+            else if (row.status === 'absent') { statusClass = 'status-absent'; statusText = 'تجاوز مؤقت (غائب) 🟤'; } 
+            else { statusClass = 'status-active'; statusText = 'جاهز 🟢'; }
+
+            tr.className = statusClass;
+            tr.innerHTML = `
+                <td><strong>${row.id}</strong></td>
+                <td class="name-cell">${escapeHTML(row.name)}</td>
+                <td dir="ltr" style="font-size:12px; color:#555;">${row.time}</td>
+                <td><span class="${badgeClass}">${row.type}</span></td>
+                <td>${statusText}</td>
+            `;
+            tbody.appendChild(tr);
         });
     }
-    window.onload = fetchStatus;
-    // ... بقية دوال التسجيل والجداول من النسخة السابقة ...
+
+    window.onload = fetchQueues;
+
+    const form = document.getElementById('queueForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const resultCard = document.getElementById('resultCard');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.innerText = "جاري الحفظ والتسجيل...";
+        resultCard.style.display = 'none';
+        let formData = new FormData(form);
+        formData.append('action', 'registerUser');
+        fetch(scriptURL, { method: 'POST', body: formData })
+            .then(response => response.json()) 
+            .then(data => {
+                if (data.status === "closed") { alert(data.message || "التسجيل مغلق"); fetchQueues(); return; }
+                document.querySelector('#mixedQueueText span').innerText = data.queueNumber;
+                resultCard.style.display = 'block'; 
+                form.reset(); submitBtn.disabled = false; submitBtn.innerText = "تسجيل الدور";
+                fetchQueues(); 
+            })
+            .catch(error => { alert("خطأ في الاتصال."); submitBtn.disabled = false; submitBtn.innerText = "تسجيل الدور"; });
+    });
+
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        const input = this.value;
+        const rows = document.getElementById("mainTableBody").getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i].getElementsByTagName("td").length < 3) continue;
+            let nameText = rows[i].getElementsByClassName("name-cell")[0].innerText;
+            rows[i].style.display = nameText.indexOf(input) > -1 ? "" : "none";
+        }
+    });
 </script>
 </body>
 </html>
