@@ -1,0 +1,99 @@
+:root {
+    --primary-color: #f39c12;
+    --bg-color: #fafafa;
+    --text-color: #333;
+    --success-color: #27ae60;
+    --suspended-color: #e67e22; 
+    --paid-color: #95a5a6;      
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px;
+}
+.header { text-align: center; margin-bottom: 30px; }
+.header img { max-width: 250px; margin-bottom: 15px; }
+.header h1 { font-size: 24px; color: #2c3e50; }
+.main-container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 900px; margin: auto; }
+.about-section, .form-section {
+    flex: 1; min-width: 300px; background: white; padding: 25px; 
+    border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.about-section h2, .form-section h2 {
+    margin-top: 0; color: #2c3e50; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;
+}
+.about-section p { line-height: 1.8; font-size: 16px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input[type="text"] {
+    width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px;
+}
+
+.radio-group { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+
+.pension-type-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+.pension-type-group label {
+    display: inline-flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+}
+.pension-type-group input[type="radio"] {
+    margin-left: 8px;
+}
+
+button.submit-btn {
+    width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; 
+    border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s;
+}
+button.submit-btn:hover { background-color: #e67e22; }
+
+.result-card {
+    display: none; background-color: #e8f8f5; border: 2px solid var(--success-color);
+    padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;
+}
+.result-card h3 { color: var(--success-color); margin-top: 0; }
+.queue-number {
+    font-size: 20px; font-weight: bold; color: #2c3e50; margin: 10px 0;
+    background: white; padding: 10px; border-radius: 5px; border: 1px dashed #ccc;
+}
+
+.queue-section {
+    max-width: 900px; margin: 40px auto 0; background: white; padding: 20px; 
+    border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.search-box { text-align: center; margin-bottom: 20px; }
+.search-box input {
+    width: 90%; max-width: 400px; padding: 12px; border: 2px solid var(--primary-color);
+    border-radius: 25px; font-size: 16px; text-align: center; outline: none; transition: all 0.3s ease;
+}
+.search-box input:focus { box-shadow: 0 0 8px rgba(243, 156, 18, 0.5); }
+
+.tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab-btn {
+    padding: 10px 20px; border: 1px solid #ccc; background: #eee; cursor: pointer; 
+    border-radius: 5px; font-weight: bold; font-size: 16px;
+}
+.tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+table { width: 100%; border-collapse: collapse; text-align: center; }
+th, td { border: 1px solid #ddd; padding: 12px; }
+th { background-color: #f4f4f4; color: #333; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); }
+
+.table-container { 
+    display: none; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;
+}
+.table-container.active { display: block; }
+#loading { text-align: center; font-weight: bold; color: #666; display: none; margin: 20px 0; }
+
+.status-active { background-color: #e8f8f5; color: #27ae60; font-weight: bold; } 
+.status-suspended { background-color: #fdf2e9; color: #d35400; font-weight: bold; } 
+.status-paid { background-color: #f4f6f7; color: #95a5a6; text-decoration: line-through; } 
+.status-absent { background-color: #f6eee3; color: #795548; font-weight: bold; } 
+
+.badge-soc { background: #3498db; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; }
+.badge-pen { background: #9b59b6; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; }
